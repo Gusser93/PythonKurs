@@ -17,16 +17,18 @@ def get_author_pdb_dict(list_of_proteins):
                 if type(i) is type(j):
                     if j.get("class")[0] == "panel-body":
                         author_str = j.div.div.ul.text.split("\n")[4].strip()
+                        break
 
             author_list = author_str.split(",")
             author_list = [author_list[i].strip() + ", " + author_list[i + 1].strip()
                            for i in range(len(author_list)) if i % 2 == 0]
             for author in author_list:
-                if dic.has_key(str(author)):
+                if (str(author)) in dic:
                     dic[str(author)].append(protein.upper())
                 else:
                     dic[str(author)] = [protein.upper()]
     return dic
 
-P_LIST = ["4hhb", "1l2y", "5et3", "5hkn", "5hkr", "4z08", "5hpn", "5aei", "5f1r"]
-print get_author_pdb_dict(P_LIST)
+if __name__ == "__main__":
+    P_LIST = ["4hhb", "1l2y", "5et3", "5hkn", "5hkr", "4z08", "5hpn", "5aei", "5f1r"]
+    print get_author_pdb_dict(P_LIST)
