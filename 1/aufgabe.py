@@ -1,7 +1,6 @@
 """
-parer for rcsb
+parser for rcsb
 """
-import re
 import urllib2
 from bs4 import BeautifulSoup, SoupStrainer
 
@@ -13,20 +12,21 @@ def get_author_pdb_dict(list_of_proteins):
     :return: dict with author as key and a list of his proteins as value
     """
 
-    strainer = SoupStrainer(class_="querySearchLink", href=re.compile("author"))
     prefix = "http://www.rcsb.org/pdb/explore/explore.do?structureId="
     dic = dict()
     for protein in list_of_proteins:
         pdb = prefix + protein.upper()
         page = urllib2.urlopen(pdb).read()
+        strainer = SoupStrainer("meta", {"name": "citation_author"})
         soup = BeautifulSoup(page, "lxml", parse_only=strainer)
-        for i in soup.find_all("a"):
-            author = i.string
-            dic.setdefault(str(author), []).append(protein.upper())
+
+        authors = soup.find_all("meta")
+        for author in authors:
+            dic.setdefault(str(author.get("content")), []).append(protein.upper())
     return dic
 
 
-def get_pdb_mthod_dict(list_of_proteins):
+def get_pdb_method_dict(list_of_proteins):
     """
     parses methods for given list of proteins
     :param list_of_proteins: given list of proteins
@@ -48,4 +48,4 @@ def get_pdb_mthod_dict(list_of_proteins):
 if __name__ == "__main__":
     P_LIST = ["4hhb", "1l2y", "5et3", "5hkn", "5hkr", "4z08", "5hpn", "5aei", "5f1r"]
     print get_author_pdb_dict(P_LIST)
-    print get_pdb_mthod_dict(P_LIST)
+    print get_pdb_method_dict(P_LIST)
